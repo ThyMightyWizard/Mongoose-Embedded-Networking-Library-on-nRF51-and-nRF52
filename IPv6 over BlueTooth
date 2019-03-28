@@ -1,0 +1,29 @@
+$ sudo hcitool lescan 
+LE Scan ... 
+00:31:A0:49:01:27 Mongoose_example
+00:31:A0:49:01:27 (unknown) 
+00:31:A0:49:01:27 Mongoose_example
+00:31:A0:49:01:27 (unknown)
+
+Before we can connect to it, we need to load and enable the bluetooth_6lowpan kernel module:
+
+$ sudo modprobe bluetooth_6lowpan 
+$ sudo bash -c 'echo 1 > /sys/kernel/debug/bluetooth/6lowpan_enable' 
+
+Now, we can make a connection by executing the following command (replace 00:AA:BB:CC:DD:EE with the actual address of your device):
+
+$ sudo bash -c 'echo "connect 00:AA:BB:CC:DD:EE 1" > /sys/kernel/debug/bluetooth/6lowpan_control'
+(Note that we can't just sudo echo "...." > .... , because in this case the redirection won't be covered by sudo )
+
+(When LED2 Turns on, your device is connected)
+
+We can ping it by the link-local address of the following form:
+
+$ ping6 fe80::2aa:bbff:fecc:ddee%bt0
+
+Again, replace aa , bb, cc , dd , ee with the address of your device. If that works, then we can finally access our HTTP endpoint on the 
+device
+
+$ curl http://[fe80::2aa:bbff:fecc:ddee%bt0]/foo/bar 
+<h1>Hello, sir!</h1> 
+You asked for /foo/bar 
