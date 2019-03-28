@@ -1,0 +1,21 @@
+   struct mg_mgr mgr; 
+   /* Initialize event manager object */ 
+   mg_mgr_init(&mgr, NULL); 
+   /* 
+    * Note that many connections can be added to a single event manager 
+    * Connections can be created at any point, e.g. in event handler function 
+    */ 
+   const char *err; 
+   struct mg_bind_opts opts = {}; 
+   opts.error_string = &err; 
+   /* Create listening connection and add it to the event manager */ 
+   struct mg_connection *nc = mg_bind_opt(&mgr, "80", ev_handler, opts); 
+   if (nc == NULL) { 
+     printf("Failed to create listener: %s\n", err); 
+     return 1; 
+   } 
+   /* Attach a built-in HTTP event handler to the connection */
+   mg_set_protocol_http_websocket(nc); 
+   
+   
+   This is just adding an event to the Mongoose Initialization 
