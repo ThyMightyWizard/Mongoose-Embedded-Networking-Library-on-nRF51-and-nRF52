@@ -34,3 +34,10 @@ void ev_handler(struct mg_connection *nc, int ev, void *ev_data) {
    } 
  } 
 } 
+
+
+
+We might also want to adjust the device name: open config/ipv6_medium_ble_cfg.h and set DEVICE_NAME to, say, "Mongoose_example" .
+
+Make sure you have #include "mongoose.h" in your make.c ,After that LED1 should turn on, which means that the device is in the 
+advertising mode.
