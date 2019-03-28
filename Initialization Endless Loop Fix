@@ -18,4 +18,10 @@
    mg_set_protocol_http_websocket(nc); 
    
    
+   we also need to add a few calls to the event loop itself
+
+     sys_check_timeouts(); 
+     mg_mgr_poll(&mgr, 0); 
+   
+   
    This is just adding an event to the Mongoose Initialization 
