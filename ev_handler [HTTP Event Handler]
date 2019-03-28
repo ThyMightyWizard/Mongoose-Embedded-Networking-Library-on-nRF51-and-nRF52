@@ -1,0 +1,36 @@
+// Define an event handler function 
+void ev_handler(struct mg_connection *nc, int ev, void *ev_data) { 
+ if (ev == MG_EV_POLL) return; 
+ /* printf("ev %d\r\n", ev); */ 
+ switch (ev) { 
+   case MG_EV_ACCEPT: { 
+     char addr[32]; 
+     mg_sock_addr_to_str(&nc->sa, addr, sizeof(addr), 
+                         MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT); 
+     printf("%p: Connection from %s\r\n", nc, addr); 
+     break; 
+   } 
+   case MG_EV_HTTP_REQUEST: { 
+     struct http_message *hm = (struct http_message *) ev_data; 
+     char addr[32]; 
+     mg_sock_addr_to_str(&nc->sa, addr, sizeof(addr), 
+                         MG_SOCK_STRINGIFY_IP | MG_SOCK_STRINGIFY_PORT); 
+     printf("%p: %.*s %.*s\r\n", nc, (int) hm->method.len, hm->method.p, 
+            (int) hm->uri.len, hm->uri.p); 
+     mg_send_response_line(nc, 200, 
+                           "Content-Type: text/html\r\n" 
+                           "Connection: close"); 
+     mg_printf(nc, 
+               "\r\n<h1>Hello, sir!</h1>\r\n" 
+               "You asked for %.*s\r\n", 
+               (int) hm->uri.len, hm->uri.p); 
+     nc->flags |= MG_F_SEND_AND_CLOSE; 
+     LEDS_INVERT(LED_THREE); 
+     break; 
+   } 
+   case MG_EV_CLOSE: { 
+     printf("%p: Connection closed\r\n", nc); 
+     break; 
+   } 
+ } 
+} 
